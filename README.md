@@ -1,1 +1,1 @@
-# homebridge-arduino-cloud
+# homebridge-arduino-iot-cloud
