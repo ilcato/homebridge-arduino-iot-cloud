@@ -121,7 +121,10 @@ export class ArduinoAccessory {
 		switch (property.type) {
 			case 'HOME_SWITCH':
 				controlService = new hapService.Switch(property.name);
-
+				controlCharacteristics = [hapCharacteristic.On];
+				break;
+			case 'HOME_LIGHT':
+				controlService = new hapService.Lightbulb(property.name);
 				controlCharacteristics = [hapCharacteristic.On];
 				break;
 			default:
