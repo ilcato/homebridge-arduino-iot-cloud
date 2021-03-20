@@ -1,0 +1,33 @@
+{
+  "pluginAlias": "ArduinoIoTCloud",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Homebridge plugin for Arduino IoT Cloud.",
+  "footerDisplay": "",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "description": "Plugin name as displayed in the homebridge log.",
+        "title": "Name",
+        "type": "string",
+        "required": true,
+        "default": "ArduinoIoTCloud"
+      },
+      "clientid": {
+        "description": "Client ID from API Key of Arduino IoT Cloud",
+        "title": "Client ID",
+        "type": "string",
+        "required": true
+      },
+      "clientsecret": {
+        "description": "Client Secret from API Key of Arduino IoT Cloud",
+        "title": "Client Secret",
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  "form": null,
+  "display": null
+}
