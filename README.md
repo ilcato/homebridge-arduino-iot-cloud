@@ -16,6 +16,9 @@ Look for a sample config in [config.json example](https://github.com/ilcato/home
 
 
 # Release notes
+Version 0.0.3
++ Fix dependencies
+
 Version 0.0.2
 + Added config schema for homebridge UI
 
