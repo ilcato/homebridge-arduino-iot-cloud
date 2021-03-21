@@ -108,13 +108,12 @@ class ArduinoIoTCloudPlatform {
 	configureAccessory(accessory) {
 		this.log("Configured Accessory: ", accessory.displayName);
 		for (let s = 0; s < accessory.services.length; s++) {
-			let service = accessory.services[s];
+			const service = accessory.services[s];
+			if (service.subtype == undefined) continue;
 			for (let i = 0; i < service.characteristics.length; i++) {
-				let characteristic = service.characteristics[i];
-				if (characteristic.props.needsBinding) {
-					this.bindCharacteristicEvents(characteristic, service);
-					this.registerAutomaticUpdate(characteristic, service)
-				}
+				const characteristic = service.characteristics[i];
+				this.bindCharacteristicEvents(characteristic, service);
+				this.registerAutomaticUpdate(characteristic, service)
 			}
 		}
 		this.accessories.set(accessory.context.uniqueSeed, accessory);
@@ -227,6 +226,8 @@ class ArduinoIoTCloudPlatform {
 		});
 		characteristic.on('get', (callback) => {
 			callback(undefined, characteristic.value);
+			if (characteristic.UUID == (new Characteristic.Name()).UUID) 
+				return;
 			this.getCharacteristicValue(characteristic, service);
 		});
 	}
