@@ -174,21 +174,21 @@ class ArduinoIoTCloudPlatform {
 
 		try {
 			await this.arduinoClientMqtt.onPropertyValue(thing_id, property_variable_name, v => {
+				let boolValue = v;
+				switch (typeof v) {
+					case 'string':
+						boolValue = (v === "false" || v === "0") ? false : true;
+						break;
+					case 'number':
+						boolValue = v === 0 ? false : true;
+						break;
+					case 'object':
+						boolValue = (v.swi === 0 || v.swi === false) ? false : true;
+						break;
+				}
 				switch (characteristic.UUID) {
 					case (new Characteristic.On()).UUID:
-						let r = v;
-						switch (typeof v) {
-							case 'string':
-								r = (v === "false" || v === "0") ? false : true;
-								break;
-							case 'number':
-								r = v === 0 ? false : true;
-								break;
-							case 'object':
-								r = (v.swi === 0 || v.swi === false) ? false : true;
-								break;
-						}
-						characteristic.updateValue(r);
+						characteristic.updateValue(boolValue);
 						break;
 					case (new Characteristic.Brightness()).UUID:
 						characteristic.updateValue(v.bri);
@@ -200,19 +200,13 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(v.sat);
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
-						characteristic.updateValue(v);
+						characteristic.updateValue(boolValue === false ? Characteristic.ContactSensorState.CONTACT_DETECTED : Characteristic.ContactSensorState.CONTACT_NOT_DETECTED);
 						break;
 					case (new Characteristic.CurrentTemperature()).UUID:
 						characteristic.updateValue(parseFloat(v));
 						break;
-					case (new Characteristic.CurrentAmbientLightLevel()).UUID:
-						characteristic.updateValue(parseFloat(v));
-						break;
 					case (new Characteristic.MotionDetected()).UUID:
 						characteristic.updateValue(v);
-						break;
-					case (new Characteristic.CurrentRelativeHumidity()).UUID:
-						characteristic.updateValue(parseInt(v));
 						break;
 					default:
 						break
@@ -272,26 +266,26 @@ class ArduinoIoTCloudPlatform {
 		let thing_id = params[1];
 		let property_id = params[2];
 		//let property_name = params[3];  
-		//let property_type = params[4];        
+		//let property_type = params[4];
 
 		this.arduinoClientHttp.getProperty(thing_id, property_id)
 			.then(response => {
 				let last_value = response.last_value;
+				let boolValue = last_value;
+				switch (typeof last_value) {
+					case 'string':
+						boolValue = (last_value === "false" || last_value === "0") ? false : true;
+						break;
+					case 'number':
+						boolValue = last_value === 0 ? false : true;
+						break;
+					case 'object':
+						boolValue = last_value.swi === 0 ? false : true;
+						break;
+				}
 				switch (characteristic.UUID) {
 					case (new Characteristic.On()).UUID:
-						let r = last_value;
-						switch (typeof last_value) {
-							case 'string':
-								r = (last_value === "false" || last_value === "0") ? false : true;
-								break;
-							case 'number':
-								r = last_value === 0 ? false : true;
-								break;
-							case 'object':
-								r = last_value.swi === 0 ? false : true;
-								break;
-						}
-						characteristic.updateValue(r);
+						characteristic.updateValue(boolValue);
 						break;
 					case (new Characteristic.Brightness()).UUID:
 						characteristic.updateValue(last_value.bri);
@@ -303,7 +297,7 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(last_value.sat);
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
-						characteristic.updateValue(last_value == "true" ? true : false);
+						characteristic.updateValue(boolValue === false ? Characteristic.ContactSensorState.CONTACT_DETECTED : Characteristic.ContactSensorState.CONTACT_NOT_DETECTED);
 						break;
 					case (new Characteristic.CurrentTemperature()).UUID:
 						characteristic.updateValue(parseFloat(last_value));

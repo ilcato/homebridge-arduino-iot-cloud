@@ -135,6 +135,10 @@ export class ArduinoAccessory {
 				controlService = new hapService.Lightbulb(property.name);
 				controlCharacteristics = [hapCharacteristic.On, hapCharacteristic.Brightness, hapCharacteristic.Hue, hapCharacteristic.Saturation];
 				break;
+			case 'HOME_CONTACT_SENSOR':
+				controlService = new hapService.ContactSensor(property.name);
+				controlCharacteristics = [hapCharacteristic.ContactSensorState];
+				break;
 			default:
 				return null;
 		}
