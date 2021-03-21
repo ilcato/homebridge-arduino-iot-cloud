@@ -103,9 +103,9 @@ class ArduinoIoTCloudPlatform {
 
 		try {
 			await this.connect();
-			const things = await this.arduinoClientHttp.getThings();
+			const things = await this.arduinoClientHttp.getThingsAndProperties();
 			things.map(async (t, i, a) => {
-				const properties = await this.arduinoClientHttp.getProperties(t.id)
+				const properties = t.properties;
 				this.LoadAccessories(t, properties);
 			});
 			// Remove no more present accessories from cache

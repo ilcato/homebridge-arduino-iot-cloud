@@ -57,6 +57,13 @@ class ArduinoClientHttp {
     oauth2.accessToken = this.token;
     return apiThings.thingsV2List();
   }
+  getThingsAndProperties() {
+    var opts = {
+      'showProperties': true
+    };
+    oauth2.accessToken = this.token;
+    return apiThings.thingsV2List(opts);
+  }
   getProperties(thingId) {
     oauth2.accessToken = this.token;
     return apiProperties.propertiesV2List(thingId);
