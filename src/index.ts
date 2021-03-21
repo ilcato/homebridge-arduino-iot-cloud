@@ -206,7 +206,7 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(parseFloat(v));
 						break;
 					case (new Characteristic.MotionDetected()).UUID:
-						characteristic.updateValue(v);
+						characteristic.updateValue(boolValue);
 						break;
 					default:
 						break
@@ -302,14 +302,8 @@ class ArduinoIoTCloudPlatform {
 					case (new Characteristic.CurrentTemperature()).UUID:
 						characteristic.updateValue(parseFloat(last_value));
 						break;
-					case (new Characteristic.CurrentAmbientLightLevel()).UUID:
-						characteristic.updateValue(parseFloat(last_value));
-						break;
 					case (new Characteristic.MotionDetected()).UUID:
-						characteristic.updateValue(last_value == "true" ? true : false);
-						break;
-					case (new Characteristic.CurrentRelativeHumidity()).UUID:
-						characteristic.updateValue(parseInt(last_value));
+						characteristic.updateValue(boolValue);
 						break;
 					default:
 						break

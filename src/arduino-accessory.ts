@@ -139,6 +139,10 @@ export class ArduinoAccessory {
 				controlService = new hapService.ContactSensor(property.name);
 				controlCharacteristics = [hapCharacteristic.ContactSensorState];
 				break;
+			case 'HOME_MOTION_SENSOR':
+				controlService = new hapService.MotionSensor(property.name);
+				controlCharacteristics = [hapCharacteristic.MotionDetected];
+				break;
 			default:
 				return null;
 		}
