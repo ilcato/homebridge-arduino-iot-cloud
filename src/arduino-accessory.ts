@@ -127,6 +127,10 @@ export class ArduinoAccessory {
 				controlService = new hapService.Lightbulb(property.name);
 				controlCharacteristics = [hapCharacteristic.On];
 				break;
+			case 'HOME_DIMMED_LIGHT':
+				controlService = new hapService.Lightbulb(property.name);
+				controlCharacteristics = [hapCharacteristic.On, hapCharacteristic.Brightness];
+				break;
 			default:
 				return null;
 		}

@@ -176,15 +176,27 @@ class ArduinoIoTCloudPlatform {
 			await this.arduinoClientMqtt.onPropertyValue(thing_id, property_variable_name, v => {
 				switch (characteristic.UUID) {
 					case (new Characteristic.On()).UUID:
-						characteristic.updateValue(v);
+						let r = v;
+						switch (typeof v) {
+							case 'string':
+								r = (v === "false" || v === "0") ? false : true;
+								break;
+							case 'number':
+								r = v === 0 ? false : true;
+								break;
+							case 'object':
+								r = (v.swi === 0 || v.swi === false) ? false : true;
+								break;
+						}
+						characteristic.updateValue(r);
 						break;
 					case (new Characteristic.Brightness()).UUID:
-						let rBrightness = parseInt(v);
-						if (rBrightness == 0) {
-							service.characteristics[1].updateValue(false);
-						} else {
-							service.characteristics[1].updateValue(true);
-						}
+						let rBrightness = v.bri;
+						// if (rBrightness == 0) {
+						// 	service.characteristics[1].updateValue(false);
+						// } else {
+						// 	service.characteristics[1].updateValue(true);
+						// }
 						characteristic.updateValue(rBrightness);
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
@@ -230,15 +242,17 @@ class ArduinoIoTCloudPlatform {
 			let thing_id = params[1];
 			let property_id = params[2];
 			//let property_name = params[3];
-			//			let property_type = params[4];
+			let property_type = params[4];
 			this.log("Setting device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, value: ${value}`);
 			try {
-				switch (characteristic.UUID) {
-					case (new Characteristic.On()).UUID:
+				switch (property_type) {
+					case 'HOME_SWITCH':
+					case 'HOME_LIGHT':
 						await this.arduinoClientHttp.setProperty(thing_id, property_id, value);
 						break;
-					case (new Characteristic.Brightness()).UUID:
-						await this.arduinoClientHttp.setProperty(thing_id, property_id, value);
+					case 'HOME_DIMMED_LIGHT':
+						const valueObject = this.formatDimmedLightValue(service);
+						await this.arduinoClientHttp.setProperty(thing_id, property_id, valueObject);
 						break;
 					default:
 						break
@@ -265,17 +279,20 @@ class ArduinoIoTCloudPlatform {
 					case (new Characteristic.On()).UUID:
 						let r = last_value;
 						switch (typeof last_value) {
-							case "string":
+							case 'string':
 								r = (last_value === "false" || last_value === "0") ? false : true;
 								break;
-							case "number":
+							case 'number':
 								r = last_value === 0 ? false : true;
+								break;
+							case 'object':
+								r = last_value.swi === 0 ? false : true;
 								break;
 						}
 						characteristic.updateValue(r);
 						break;
 					case (new Characteristic.Brightness()).UUID:
-						characteristic.updateValue(parseInt(last_value));
+						characteristic.updateValue(parseInt(last_value.bri));
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
 						characteristic.updateValue(last_value == "true" ? true : false);
@@ -300,5 +317,13 @@ class ArduinoIoTCloudPlatform {
 			.catch(err => {
 				this.log("Getting device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, last value: not connected yet`);
 			});
+	}
+	formatDimmedLightValue(service) {
+		return {
+			swi: service.characteristics[1].value,
+			bri: service.characteristics[2].value,
+			hue: 0,
+			sat: 0
+		};
 	}
 }
