@@ -37,6 +37,8 @@
 
 'use strict'
 
+import { Mutex } from 'async-mutex';
+
 import { Config } from './config'
 import {
 	pluginName,
@@ -67,6 +69,7 @@ class ArduinoIoTCloudPlatform {
 	accessories: Map<string, any>;
 	arduinoClientMqtt: any;
 	arduinoClientHttp: any;
+	mutex = new Mutex();
 
 	constructor(log: (format: string, message: any) => void, config: Config, api: any) {
 		this.log = log;
@@ -78,16 +81,28 @@ class ArduinoIoTCloudPlatform {
 		this.api.on('didFinishLaunching', this.didFinishLaunching.bind(this));
 
 	}
+	async connect() {
+		await this.mutex.runExclusive(async () => {
+			if (this.arduinoClientMqtt || this.arduinoClientHttp) {
+				return;
+			}
+			try {
+				this.arduinoClientMqtt = await arduinoConnectionManager.getClientMqtt(this.config, this.log);
+				this.arduinoClientHttp = await arduinoConnectionManager.getClientHttp(this.config, this.log);
+				if (!this.arduinoClientMqtt || !this.arduinoClientHttp) {
+					this.log("Error connecting to Arduino IoT Cloud: ", "Cannot obtain mqtt client or http client.");
+				}
+
+			} catch (e) {
+				this.log("Error connecting to Arduino IoT Cloud: ", e);
+			}
+		});
+	}
 	async didFinishLaunching() {
 		this.log('didFinishLaunching.', '')
 
 		try {
-			this.arduinoClientMqtt = await arduinoConnectionManager.getClientMqtt(this.config, this.log);
-			this.arduinoClientHttp = await arduinoConnectionManager.getClientHttp(this.config, this.log);
-			if (this.arduinoClientHttp === null) {
-				this.log("Error connecting to Arduino IoT Cloud: ", "Cannot obtain http client.");
-			}
-
+			await this.connect();
 			const things = await this.arduinoClientHttp.getThings();
 			things.map(async (t, i, a) => {
 				const properties = await this.arduinoClientHttp.getProperties(t.id)
@@ -105,13 +120,16 @@ class ArduinoIoTCloudPlatform {
 		}
 	}
 
-	configureAccessory(accessory) {
+	async configureAccessory(accessory) {
+		await this.connect();
 		this.log("Configured Accessory: ", accessory.displayName);
 		for (let s = 0; s < accessory.services.length; s++) {
 			const service = accessory.services[s];
 			if (service.subtype == undefined) continue;
 			for (let i = 0; i < service.characteristics.length; i++) {
 				const characteristic = service.characteristics[i];
+				if (characteristic.UUID == (new Characteristic.Name()).UUID)
+					continue;
 				this.bindCharacteristicEvents(characteristic, service);
 				this.registerAutomaticUpdate(characteristic, service)
 			}
@@ -226,8 +244,6 @@ class ArduinoIoTCloudPlatform {
 		});
 		characteristic.on('get', (callback) => {
 			callback(undefined, characteristic.value);
-			if (characteristic.UUID == (new Characteristic.Name()).UUID) 
-				return;
 			this.getCharacteristicValue(characteristic, service);
 		});
 	}
