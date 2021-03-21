@@ -147,6 +147,11 @@ export class ArduinoAccessory {
 				controlService = new hapService.MotionSensor(property.name);
 				controlCharacteristics = [hapCharacteristic.MotionDetected];
 				break;
+			case 'HOME_TEMPERATURE_C':
+			case 'HOME_TEMPERATURE_F':
+				controlService = new hapService.TemperatureSensor(property.name);
+				controlCharacteristics = [hapCharacteristic.CurrentTemperature];
+				break;
 			default:
 				return null;
 		}
