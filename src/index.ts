@@ -191,13 +191,13 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(r);
 						break;
 					case (new Characteristic.Brightness()).UUID:
-						let rBrightness = v.bri;
-						// if (rBrightness == 0) {
-						// 	service.characteristics[1].updateValue(false);
-						// } else {
-						// 	service.characteristics[1].updateValue(true);
-						// }
-						characteristic.updateValue(rBrightness);
+						characteristic.updateValue(v.bri);
+						break;
+					case (new Characteristic.Hue()).UUID:
+						characteristic.updateValue(v.hue);
+						break;
+					case (new Characteristic.Saturation()).UUID:
+						characteristic.updateValue(v.sat);
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
 						characteristic.updateValue(v);
@@ -251,8 +251,10 @@ class ArduinoIoTCloudPlatform {
 						await this.arduinoClientHttp.setProperty(thing_id, property_id, value);
 						break;
 					case 'HOME_DIMMED_LIGHT':
-						const valueObject = this.formatDimmedLightValue(service);
-						await this.arduinoClientHttp.setProperty(thing_id, property_id, valueObject);
+						await this.arduinoClientHttp.setProperty(thing_id, property_id, this.formatDimmedLightValue(service));
+						break;
+					case 'HOME_COLORED_LIGHT':
+						await this.arduinoClientHttp.setProperty(thing_id, property_id, this.formatColoredLightValue(service));
 						break;
 					default:
 						break
@@ -292,7 +294,13 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(r);
 						break;
 					case (new Characteristic.Brightness()).UUID:
-						characteristic.updateValue(parseInt(last_value.bri));
+						characteristic.updateValue(last_value.bri);
+						break;
+					case (new Characteristic.Hue()).UUID:
+						characteristic.updateValue(last_value.hue);
+						break;
+					case (new Characteristic.Saturation()).UUID:
+						characteristic.updateValue(last_value.sat);
 						break;
 					case (new Characteristic.ContactSensorState()).UUID:
 						characteristic.updateValue(last_value == "true" ? true : false);
@@ -324,6 +332,14 @@ class ArduinoIoTCloudPlatform {
 			bri: service.characteristics[2].value,
 			hue: 0,
 			sat: 0
+		};
+	}
+	formatColoredLightValue(service) {
+		return {
+			swi: service.characteristics[1].value,
+			bri: service.characteristics[2].value,
+			hue: service.characteristics[3].value,
+			sat: service.characteristics[4].value
 		};
 	}
 }

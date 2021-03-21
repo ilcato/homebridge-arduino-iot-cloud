@@ -131,6 +131,10 @@ export class ArduinoAccessory {
 				controlService = new hapService.Lightbulb(property.name);
 				controlCharacteristics = [hapCharacteristic.On, hapCharacteristic.Brightness];
 				break;
+			case 'HOME_COLORED_LIGHT':
+				controlService = new hapService.Lightbulb(property.name);
+				controlCharacteristics = [hapCharacteristic.On, hapCharacteristic.Brightness, hapCharacteristic.Hue, hapCharacteristic.Saturation];
+				break;
 			default:
 				return null;
 		}
