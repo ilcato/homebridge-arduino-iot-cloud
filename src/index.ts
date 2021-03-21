@@ -170,7 +170,7 @@ class ArduinoIoTCloudPlatform {
 		let thing_id = params[1];
 		//let property_id = params[2];        
 		let property_variable_name = params[3];
-		//let property_type = params[4];
+		let property_type = params[4];
 
 		try {
 			await this.arduinoClientMqtt.onPropertyValue(thing_id, property_variable_name, v => {
@@ -203,7 +203,9 @@ class ArduinoIoTCloudPlatform {
 						characteristic.updateValue(boolValue === false ? Characteristic.ContactSensorState.CONTACT_DETECTED : Characteristic.ContactSensorState.CONTACT_NOT_DETECTED);
 						break;
 					case (new Characteristic.CurrentTemperature()).UUID:
-						characteristic.updateValue(parseFloat(v));
+						if (property_type === 'HOME_TEMPERATURE_F') {
+							v = this.convertFtoC(v);
+						} characteristic.updateValue(v);
 						break;
 					case (new Characteristic.MotionDetected()).UUID:
 						characteristic.updateValue(boolValue);
