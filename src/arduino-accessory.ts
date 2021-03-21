@@ -123,6 +123,10 @@ export class ArduinoAccessory {
 				controlService = new hapService.Switch(property.name);
 				controlCharacteristics = [hapCharacteristic.On];
 				break;
+			case 'HOME_SMART_PLUG':
+				controlService = new hapService.Outlet(property.name);
+				controlCharacteristics = [hapCharacteristic.On];
+				break;
 			case 'HOME_LIGHT':
 				controlService = new hapService.Lightbulb(property.name);
 				controlCharacteristics = [hapCharacteristic.On];

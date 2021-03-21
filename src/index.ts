@@ -241,6 +241,7 @@ class ArduinoIoTCloudPlatform {
 			try {
 				switch (property_type) {
 					case 'HOME_SWITCH':
+					case 'HOME_SMART_PLUG':
 					case 'HOME_LIGHT':
 						await this.arduinoClientHttp.setProperty(thing_id, property_id, value);
 						break;
