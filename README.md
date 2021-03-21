@@ -16,6 +16,9 @@ Look for a sample config in [config.json example](https://github.com/ilcato/home
 
 
 # Release notes
+Version 0.0.4
++ Added support for LIGHT, DIMMED_LIGHT, COLORED_LIGHT, CONTACT_SENSOR, MOTION_SENSOR, SMART_PLUG, TEMPERATURE property types
+
 Version 0.0.3
 + Fix dependencies
 

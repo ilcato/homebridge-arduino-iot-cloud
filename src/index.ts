@@ -230,7 +230,6 @@ class ArduinoIoTCloudPlatform {
 					default:
 						break
 				}
-				this.log("Updating device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, last value: ${v}`);
 			});
 		} catch (err) {
 			this.log('Error subscribing to property value', err);;
@@ -256,7 +255,6 @@ class ArduinoIoTCloudPlatform {
 			let property_id = params[2];
 			//let property_name = params[3];
 			let property_type = params[4];
-			this.log("Setting device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, value: ${value}`);
 			try {
 				switch (property_type) {
 					case 'HOME_SWITCH':
@@ -331,7 +329,6 @@ class ArduinoIoTCloudPlatform {
 					default:
 						break
 				}
-				this.log("Getting device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, last value: ${last_value}`);
 			})
 			.catch(err => {
 				this.log("Getting device: ", `${service.displayName}, characteristic: ${characteristic.displayName}, last value: not connected yet`);
