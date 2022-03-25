@@ -288,22 +288,28 @@ class ArduinoIoTCloudPlatform {
 
 		this.arduinoClientHttp.getProperty(thing_id, property_id)
 			.then(response => {
-				let last_value = response.last_value;
-				let boolValue = last_value;
-				switch (typeof last_value) {
-					case 'string':
-						boolValue = (last_value === "false" || last_value === "0") ? false : true;
-						break;
-					case 'number':
-						boolValue = last_value === 0 ? false : true;
-						break;
-					case 'object':
-						boolValue = last_value.swi === 0 ? false : true;
-						break;
-				}
+				const last_value = response.last_value;
+				const boolValue = (() => {
+					switch (typeof last_value) {
+						case 'string':
+							return (last_value === "false" || last_value === "0") ? false : true;
+						case 'number':
+							return last_value === 0 ? false : true;
+						case 'object':
+							if (last_value.hasOwnProperty('swi')) {
+								return last_value.swi === 0 ? false : true;
+							} else {
+								return undefined;
+							}
+						default:
+							return undefined;
+						}	
+				})();
 				switch (characteristic.UUID) {
 					case (new Characteristic.On()).UUID:
-						characteristic.updateValue(boolValue);
+						if (boolValue !== undefined) {
+							characteristic.updateValue(boolValue);
+						}
 						break;
 					case (new Characteristic.Brightness()).UUID:
 						characteristic.updateValue(last_value.bri);
@@ -319,9 +325,10 @@ class ArduinoIoTCloudPlatform {
 						break;
 					case (new Characteristic.CurrentTemperature()).UUID:
 						if (property_type === 'HOME_TEMPERATURE_F') {
-							last_value = this.convertFtoC(last_value);
+							characteristic.updateValue(this.convertFtoC(last_value));
+						} else {
+							characteristic.updateValue(last_value);
 						}
-						characteristic.updateValue(last_value);
 						break;
 					case (new Characteristic.MotionDetected()).UUID:
 						characteristic.updateValue(boolValue);
