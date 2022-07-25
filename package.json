@@ -25,7 +25,7 @@
     "Siri"
   ],
   "dependencies": {
-    "@arduino/arduino-iot-client": "^1.4.0",
+    "@arduino/arduino-iot-client": "^1.4.1",
     "arduino-iot-js": "^0.7.0",
     "async-mutex": "^0.3.2",
     "superagent": "^6.1.0"
