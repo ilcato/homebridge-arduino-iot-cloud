@@ -26,7 +26,7 @@
   ],
   "dependencies": {
     "@arduino/arduino-iot-client": "^1.4.1",
-    "arduino-iot-js": "^0.7.0",
+    "arduino-iot-js": "^0.5.2",
     "async-mutex": "^0.3.2",
     "superagent": "^6.1.0"
   },
