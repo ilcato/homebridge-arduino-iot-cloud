@@ -28,6 +28,7 @@
     "@arduino/arduino-iot-client": "^1.4.1",
     "arduino-iot-js": "^0.5.2",
     "async-mutex": "^0.3.2",
+    "glob-parent": "^6.0.2",
     "superagent": "^6.1.0"
   },
   "devDependencies": {
